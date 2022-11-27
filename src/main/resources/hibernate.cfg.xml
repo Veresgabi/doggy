@@ -4,15 +4,15 @@
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <!-- <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://ec2-54-235-98-1.compute-1.amazonaws.com:5432/d5lcapepitqp5d</property>
-        <property name="dialect">org.hibernate.dialect.PostgresPlusDialect</property> -->
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://ec2-54-228-218-84.eu-west-1.compute.amazonaws.com:5432/d6mcdpbtmvg2</property>
+        <property name="dialect">org.hibernate.dialect.PostgresPlusDialect</property>
 
-        <property name="connection.driver_class">org.h2.Driver</property>
+        <!--  <property name="connection.driver_class">org.h2.Driver</property>
         <property name="connection.url">jdbc:h2:~/h2db/doggy_db</property>
         <property name="dialect">org.hibernate.dialect.H2Dialect</property>
         <property name="connection.username">sa</property>
-        <property name="connection.password">password</property>
+        <property name="connection.password">password</property> -->
 
         <property name="connection.pool_size">3</property>
         <property name="current_session_context_class">thread</property>

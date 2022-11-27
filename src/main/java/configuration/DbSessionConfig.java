@@ -12,8 +12,8 @@ public class DbSessionConfig {
     @Bean
     public void getDbSession() {
         Configuration config = new Configuration();
-        // config.setProperty("hibernate.connection.username", System.getenv("DB_USERNAME"));
-        // config.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
+        config.setProperty("hibernate.connection.username", System.getenv("DB_USERNAME"));
+        config.setProperty("hibernate.connection.password", System.getenv("DB_PASSWORD"));
         config.configure();
         // local SessionFactory bean created
         SessionFactory sessionFactory = config.buildSessionFactory();
