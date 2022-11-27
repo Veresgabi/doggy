@@ -48,20 +48,20 @@ public class UserServiceImpl implements UserService {
             if (!accessTokenValid && !refreshTokenValid) {
                 newAccessToken = tokenProvider.generateAccessToken(user.getUsername());
                 newRefreshToken = tokenProvider.generateRefreshToken(user.getUsername());
-                addAccessTokenCookie(responseHeaders, newAccessToken);
-                addRefreshTokenCookie(responseHeaders, newRefreshToken);
+                responseHeaders = addAccessTokenCookie(responseHeaders, newAccessToken);
+                responseHeaders = addRefreshTokenCookie(responseHeaders, newRefreshToken);
             }
 
             if (!accessTokenValid && refreshTokenValid) {
                 newAccessToken = tokenProvider.generateAccessToken(user.getUsername());
-                addAccessTokenCookie(responseHeaders, newAccessToken);
+                responseHeaders = addAccessTokenCookie(responseHeaders, newAccessToken);
             }
 
             if (accessTokenValid && refreshTokenValid) {
                 newAccessToken = tokenProvider.generateAccessToken(user.getUsername());
                 newRefreshToken = tokenProvider.generateRefreshToken(user.getUsername());
-                addAccessTokenCookie(responseHeaders, newAccessToken);
-                addRefreshTokenCookie(responseHeaders, newRefreshToken);
+                responseHeaders = addAccessTokenCookie(responseHeaders, newAccessToken);
+                responseHeaders = addRefreshTokenCookie(responseHeaders, newRefreshToken);
             }
             authResponse.setMessage("Auth was successful.");
             authResponse.setUser(user);
@@ -141,11 +141,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void addAccessTokenCookie(HttpHeaders httpHeaders, Token token) {
+    private HttpHeaders addAccessTokenCookie(HttpHeaders httpHeaders, Token token) {
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createAccessTokenCookie(token.getTokenValue(), token.getDuration()).toString());
+        return httpHeaders;
     }
 
-    private void addRefreshTokenCookie(HttpHeaders httpHeaders, Token token) {
+    private HttpHeaders addRefreshTokenCookie(HttpHeaders httpHeaders, Token token) {
         httpHeaders.add(HttpHeaders.SET_COOKIE, cookieUtil.createRefreshTokenCookie(token.getTokenValue(), token.getDuration()).toString());
+        return httpHeaders;
     }
 }
