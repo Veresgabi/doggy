@@ -63,7 +63,7 @@ public class DogServiceImpl implements DogService {
 
         int numberOfPages = 0;
         if (apiResponse != null) {
-            dogs = mapper.readValue(apiResponse, new TypeReference<>(){ });
+            dogs = mapper.readValue(apiResponse, new TypeReference<List<Dog>>(){ });
         }
 
         if (!dogs.isEmpty()) {
