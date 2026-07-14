@@ -189,6 +189,12 @@ public class Dog {
         @JsonProperty("Toy")
         TOY,
         @JsonProperty("Working")
-        WORKING
+        WORKING,
+        @JsonProperty("Guardian")
+        GUARDIAN,
+        @JsonProperty("Companion")
+        COMPANION,
+        @JsonProperty("Foundation Stock Service")
+        FOUNDATION_STOCK_SERVICE
     }
 }

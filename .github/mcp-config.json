@@ -1,0 +1,339 @@
+{
+  "$schema": "https://raw.githubusercontent.com/modelcontextprotocol/specification/main/schema/schema.json",
+  "mcpServers": {
+    "github": {
+      "name": "GitHub API Server",
+      "description": "MCP server for GitHub operations including PR management, issue creation, and repository operations",
+      "command": "node",
+      "args": ["../../../.github/mcp-servers/github-server.js"],
+      "env": {
+        "GITHUB_TOKEN": "${process.env.GITHUB_TOKEN}",
+        "GITHUB_OWNER": "Gabor_Veres",
+        "GITHUB_REPO": "doggy"
+      },
+      "tools": [
+        {
+          "name": "create_pull_request",
+          "description": "Create a new pull request on GitHub",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "PR title"
+              },
+              "body": {
+                "type": "string",
+                "description": "PR description"
+              },
+              "head": {
+                "type": "string",
+                "description": "Head branch name (feature branch)"
+              },
+              "base": {
+                "type": "string",
+                "description": "Base branch name (usually 'main')"
+              },
+              "labels": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Labels to add to the PR"
+              }
+            },
+            "required": ["title", "body", "head", "base"]
+          }
+        },
+        {
+          "name": "get_pull_request",
+          "description": "Get details of a specific pull request",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "pr_number": {
+                "type": "integer",
+                "description": "Pull request number"
+              }
+            },
+            "required": ["pr_number"]
+          }
+        },
+        {
+          "name": "update_pull_request",
+          "description": "Update an existing pull request",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "pr_number": {
+                "type": "integer",
+                "description": "Pull request number"
+              },
+              "state": {
+                "type": "string",
+                "enum": ["open", "closed"],
+                "description": "PR state"
+              },
+              "title": {
+                "type": "string",
+                "description": "New PR title"
+              },
+              "body": {
+                "type": "string",
+                "description": "New PR description"
+              }
+            },
+            "required": ["pr_number"]
+          }
+        },
+        {
+          "name": "list_pull_requests",
+          "description": "List pull requests with optional filters",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": ["open", "closed", "all"],
+                "description": "Filter by state"
+              },
+              "labels": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Filter by labels"
+              }
+            }
+          }
+        },
+        {
+          "name": "add_pr_comment",
+          "description": "Add a comment to a pull request",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "pr_number": {
+                "type": "integer",
+                "description": "Pull request number"
+              },
+              "comment": {
+                "type": "string",
+                "description": "Comment text"
+              }
+            },
+            "required": ["pr_number", "comment"]
+          }
+        }
+      ]
+    },
+    "code-analysis": {
+      "name": "Code Analysis Server",
+      "description": "MCP server for code quality analysis, linting, and compliance checking",
+      "command": "node",
+      "args": ["../../../.github/mcp-servers/code-analysis-server.js"],
+      "env": {
+        "PROJECT_ROOT": "${process.env.PROJECT_ROOT}",
+        "SONARQUBE_HOST": "${process.env.SONARQUBE_HOST}",
+        "SONARQUBE_TOKEN": "${process.env.SONARQUBE_TOKEN}"
+      },
+      "tools": [
+        {
+          "name": "analyze_code_quality",
+          "description": "Analyze Java code for quality issues and SOLID principle violations",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "file_path": {
+                "type": "string",
+                "description": "Path to Java file to analyze"
+              },
+              "check_type": {
+                "type": "string",
+                "enum": ["imports", "naming", "solid", "complexity", "all"],
+                "description": "Type of analysis to perform"
+              }
+            },
+            "required": ["file_path"]
+          }
+        },
+        {
+          "name": "check_test_coverage",
+          "description": "Check test coverage for a specific class or package",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "string",
+                "description": "Class name or package to check coverage for"
+              },
+              "min_coverage": {
+                "type": "integer",
+                "description": "Minimum coverage threshold (0-100)",
+                "default": 80
+              }
+            },
+            "required": ["target"]
+          }
+        },
+        {
+          "name": "lint_java_file",
+          "description": "Run CheckStyle and other linters on Java file",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "file_path": {
+                "type": "string",
+                "description": "Path to Java file to lint"
+              },
+              "strict_mode": {
+                "type": "boolean",
+                "description": "Apply strict style rules",
+                "default": false
+              }
+            },
+            "required": ["file_path"]
+          }
+        },
+        {
+          "name": "detect_code_smells",
+          "description": "Detect code smells like god classes, long methods, etc",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "file_path": {
+                "type": "string",
+                "description": "Path to analyze"
+              }
+            },
+            "required": ["file_path"]
+          }
+        },
+        {
+          "name": "generate_quality_report",
+          "description": "Generate comprehensive code quality report",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "report_type": {
+                "type": "string",
+                "enum": ["summary", "detailed", "sonarqube"],
+                "description": "Type of report to generate"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "maven-build": {
+      "name": "Maven Build Server",
+      "description": "MCP server for Maven build operations, testing, and dependency management",
+      "command": "node",
+      "args": ["../../../.github/mcp-servers/maven-build-server.js"],
+      "env": {
+        "PROJECT_ROOT": "${process.env.PROJECT_ROOT}",
+        "MAVEN_HOME": "${process.env.MAVEN_HOME}",
+        "JAVA_HOME": "${process.env.JAVA_HOME}"
+      },
+      "tools": [
+        {
+          "name": "run_tests",
+          "description": "Run unit tests with Maven",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "test_class": {
+                "type": "string",
+                "description": "Specific test class to run (optional)"
+              },
+              "test_method": {
+                "type": "string",
+                "description": "Specific test method to run (optional)"
+              },
+              "profile": {
+                "type": "string",
+                "description": "Maven profile to use"
+              }
+            }
+          }
+        },
+        {
+          "name": "run_integration_tests",
+          "description": "Run integration tests with Spring Boot Test",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "test_class": {
+                "type": "string",
+                "description": "Specific integration test class"
+              }
+            }
+          }
+        },
+        {
+          "name": "build_project",
+          "description": "Build the project with Maven",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "skip_tests": {
+                "type": "boolean",
+                "description": "Skip running tests during build",
+                "default": false
+              },
+              "clean": {
+                "type": "boolean",
+                "description": "Clean build (remove target directory)",
+                "default": false
+              }
+            }
+          }
+        },
+        {
+          "name": "check_dependencies",
+          "description": "Check for vulnerable or outdated dependencies",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "check_vulnerabilities": {
+                "type": "boolean",
+                "description": "Check for known CVEs",
+                "default": true
+              },
+              "check_updates": {
+                "type": "boolean",
+                "description": "Check for available updates",
+                "default": false
+              }
+            }
+          }
+        },
+        {
+          "name": "generate_coverage_report",
+          "description": "Generate JaCoCo code coverage report",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "view_report": {
+                "type": "boolean",
+                "description": "Open coverage report in browser",
+                "default": false
+              }
+            }
+          }
+        },
+        {
+          "name": "compile_project",
+          "description": "Compile the project without running tests",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "fail_on_error": {
+                "type": "boolean",
+                "description": "Fail build on compilation errors",
+                "default": true
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+

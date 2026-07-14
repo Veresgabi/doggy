@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.CoercionAction;
 import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
 import com.fasterxml.jackson.databind.type.LogicalType;
-import dto.AbstractResponse;
 import dto.DogResponse;
 import dto.FilterDogDTO;
 import model.Dog;
@@ -18,13 +17,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import repository.DogRepository;
+import repository.DogRepositoryCustom;
 import repository.DogRepositoryCustomImpl;
+import util.DogUtil;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +31,12 @@ public class DogServiceImpl implements DogService {
 
     @Value("${pagination.limit}")
     private int paginationLimit;
+
+    @Autowired
+    private DogUtil dogUtil;
+
+    @Autowired
+    private DogRepositoryCustom dogRepositoryCustomImpl;
 
     private final int minimumTextLengthToFilterName = 3;
     private final int minimumTextLengthToFilterLifeSpan = 2;
@@ -44,42 +48,60 @@ public class DogServiceImpl implements DogService {
     @Transactional
     public ResponseEntity<DogResponse> syncDogs() throws Exception {
 
-        List<Dog> dogs = new ArrayList<>();
+        try {
+            List<Dog> dogs = new ArrayList<>();
 
-        WebClient client = WebClient.builder()
+            WebClient client = WebClient.builder()
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
 
-        String apiResponse = client
+            String apiResponse = client
                 .get()
                 .uri("https://api.thedogapi.com/v1/breeds")
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
 
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.coercionConfigFor(LogicalType.Enum)
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.coercionConfigFor(LogicalType.Enum)
                 .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
 
-        int numberOfPages = 0;
-        if (apiResponse != null) {
-            dogs = mapper.readValue(apiResponse, new TypeReference<List<Dog>>(){ });
-        }
+            int numberOfPages = 0;
+            if (apiResponse != null) {
+                dogs = mapper.readValue(apiResponse, new TypeReference<List<Dog>>(){ });
+            }
 
-        if (!dogs.isEmpty()) {
-            dogRepository.deleteAll();
-            dogRepository.saveAll(dogs);
-            float numberOfDogs = dogs.size();
-            float paginationLimitFloat = paginationLimit;
-            numberOfPages = (int) Math.ceil(numberOfDogs / paginationLimitFloat);
-        }
+            if (!dogs.isEmpty()) {
+                dogRepository.deleteAll();
 
-        return ResponseEntity.ok().body(
-                new DogResponse("Syncing dogs was successful!",
-                        dogs.stream().limit(paginationLimit).collect(Collectors.toList()),
+                int index = 0;
+                List<Dog> dogsToSave = new ArrayList<>();
+                for (Dog dog : dogs) {
+                    dogsToSave.add(dog);
+                    if ((index + 1) % paginationLimit == 0 || index == dogs.size() - 1) {
+                        dogUtil.getImageForDogs(dogsToSave);
+                        dogRepository.saveAll(dogsToSave);
+                        dogsToSave = new ArrayList<>();
+                    }
+                    index++;
+                }
+                float numberOfDogs = dogs.size();
+                float paginationLimitFloat = paginationLimit;
+                numberOfPages = (int) Math.ceil(numberOfDogs / paginationLimitFloat);
+
+                List<Dog> paginedDogs = dogs.stream().limit(paginationLimit).collect(Collectors.toList());
+
+                return ResponseEntity.ok().body(
+                    new DogResponse("Syncing dogs was successful!",
+                        paginedDogs,
                         null,
                         numberOfPages, 1)
-        );
+                );
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+        return null;
     }
 
     @Override
@@ -91,6 +113,14 @@ public class DogServiceImpl implements DogService {
             float paginationLimitFloat = paginationLimit;
             Integer numberOfPages = (int) Math.ceil(numberOfDogs / paginationLimitFloat);
             List<Dog> dogs = dogRepository.findAll(PageRequest.of(page - 1, paginationLimit));
+
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.coercionConfigFor(LogicalType.Enum)
+                .setCoercion(CoercionInputShape.EmptyString, CoercionAction.AsNull);
+
+            dogUtil.getImageForDogs(dogs);
+            dogRepository.saveAll(dogs);
+
             response.setDogs(dogs);
             response.setMessage("Finding dogs was successful!");
             response.setNumberOfPages(numberOfPages);
@@ -106,7 +136,6 @@ public class DogServiceImpl implements DogService {
     @Override
     public ResponseEntity<DogResponse> filter(FilterDogDTO request) {
 
-        DogRepositoryCustomImpl dogRepoCustom = new DogRepositoryCustomImpl();
         List<Dog> dogs;
         DogResponse response = new DogResponse();
 
@@ -119,8 +148,8 @@ public class DogServiceImpl implements DogService {
 
         int numberOfPages;
         try {
-            dogs = dogRepoCustom.findDogsByFilterRequest(request, paginationLimit);
-            float numberOfDogs = dogRepoCustom.countDogsByFilterRequest(request);
+            dogs = dogRepositoryCustomImpl.findDogsByFilterRequest(request, paginationLimit);
+            float numberOfDogs = dogRepositoryCustomImpl.countDogsByFilterRequest(request);
             float paginationLimitFloat = paginationLimit;
             numberOfPages = (int) Math.ceil(numberOfDogs / paginationLimitFloat);
         }

@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface DogRepositoryCustom {
 
-    List<Dog> findDogsByFilterRequest(FilterDogDTO request, Integer maxResults);
+    List<Dog> findDogsByFilterRequest(FilterDogDTO request, Integer maxResults) throws Exception;
     Long countDogsByFilterRequest(FilterDogDTO request);
 }

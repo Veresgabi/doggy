@@ -17,19 +17,19 @@ public class CookieUtil {
     public HttpCookie createAccessTokenCookie(String token, Long duration) {
         String encryptedToken = SecurityCipher.encrypt(token);
         return ResponseCookie.from(accessTokenCookieName, encryptedToken)
-                .maxAge(duration)
-                .httpOnly(true)
-                .path("/")
-                .build();
+            .maxAge(duration)
+            .httpOnly(true)
+            .path("/")
+            .build();
     }
 
     public HttpCookie createRefreshTokenCookie(String token, Long duration) {
         String encryptedToken = SecurityCipher.encrypt(token);
         return ResponseCookie.from(refreshTokenCookieName, encryptedToken)
-                .maxAge(duration)
-                .httpOnly(true)
-                .path("/")
-                .build();
+            .maxAge(duration)
+            .httpOnly(true)
+            .path("/")
+            .build();
     }
 
     public HttpCookie deleteAccessTokenCookie() {
