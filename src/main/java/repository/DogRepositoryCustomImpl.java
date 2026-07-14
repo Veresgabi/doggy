@@ -35,13 +35,13 @@ public class DogRepositoryCustomImpl implements DogRepositoryCustom {
         qry.select(rootDog)
                 .where(predFilter);
 
-        List<Dog> lstDogs = entityManager.createQuery(qry)
+        List<Dog> dogs = entityManager.createQuery(qry)
             .setFirstResult((request.getPage() - 1) * maxResults)
             .setMaxResults(maxResults)
             .getResultList();
 
-        dogUtil.getImageForDogs(lstDogs);
-        dogRepository.saveAll(lstDogs);
+        dogUtil.getImageForDogs(dogs);
+        dogRepository.saveAll(dogs);
 
         return null;
     }
