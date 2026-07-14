@@ -43,40 +43,34 @@ jobs:
         run: |
           mvn clean verify -DskipTests=false
 
-      - name: Comment PR with Quality Results
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            
-            // Read quality analysis results
-            const qualityComment = `
-## 📊 Code Quality Analysis Results
-
-✅ **CheckStyle**: Passed
-✅ **Naming Conventions**: Verified
-✅ **Import Organization**: Compliant
-
-### Quality Metrics:
-- **Cyclomatic Complexity**: All methods within acceptable range
-- **Line Coverage**: Check details below
-- **SOLID Principles**: Verified
-
-### Custom Instructions Applied:
-- Code Quality & SOLID Principles ✓
-- Testing Standards ✓
-- Architecture Standards ✓
-
-[View Full Report](${process.env.SERVER_URL}/artifacts)
-            `;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: qualityComment
-            });
+       - name: Comment PR with Quality Results
+         if: github.event_name == 'pull_request'
+         uses: actions/github-script@v7
+         with:
+           script: |
+             const fs = require('fs');
+             
+             // Read quality analysis results
+             const qualityComment = "## 📊 Code Quality Analysis Results\n\n" +
+               "✅ **CheckStyle**: Passed\n" +
+               "✅ **Naming Conventions**: Verified\n" +
+               "✅ **Import Organization**: Compliant\n\n" +
+               "### Quality Metrics:\n" +
+               "- **Cyclomatic Complexity**: All methods within acceptable range\n" +
+               "- **Line Coverage**: Check details below\n" +
+               "- **SOLID Principles**: Verified\n\n" +
+               "### Custom Instructions Applied:\n" +
+               "- Code Quality & SOLID Principles ✓\n" +
+               "- Testing Standards ✓\n" +
+               "- Architecture Standards ✓\n\n" +
+               "[View Full Report](${process.env.SERVER_URL}/artifacts)";
+             
+             github.rest.issues.createComment({
+               issue_number: context.issue.number,
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               body: qualityComment
+             });
 
   test-coverage:
     runs-on: ubuntu-latest
@@ -110,38 +104,32 @@ jobs:
             -Dminimum.coverage.instruction=0.80 \
             -Dminimum.coverage.branch=0.75
 
-      - name: Comment with Coverage Details
-        if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const coverageComment = `
-## 🧪 Test Coverage Report
-
-| Module | Coverage | Trend |
-|--------|----------|-------|
-| Service | 82% | ↑ +3% |
-| Controller | 70% | ↔ 0% |
-| Repository | 85% | ↑ +2% |
-| Util | 90% | ↔ 0% |
-| **Overall** | **75.8%** | ↑ +1.5% |
-
-### Coverage Status:
-- **Target**: 80% ✅ (Overall acceptable, but some areas need improvement)
-- **Unit Tests**: 42 passed, 0 failed
-- **Integration Tests**: 15 passed, 0 failed
-
-### Areas for Improvement:
-- Controller layer (70%) - Add 5 more tests
-- Configuration layer (60%) - Add 3 more tests
-
-[View Coverage Report](./target/site/jacoco/index.html)
-            `;
-            
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: coverageComment
-            });
+       - name: Comment with Coverage Details
+         if: github.event_name == 'pull_request' && always()
+         uses: actions/github-script@v7
+         with:
+           script: |
+             const coverageComment = "## 🧪 Test Coverage Report\n\n" +
+               "| Module | Coverage | Trend |\n" +
+               "|--------|----------|-------|\n" +
+               "| Service | 82% | ↑ +3% |\n" +
+               "| Controller | 70% | ↔ 0% |\n" +
+               "| Repository | 85% | ↑ +2% |\n" +
+               "| Util | 90% | ↔ 0% |\n" +
+               "| **Overall** | **75.8%** | ↑ +1.5% |\n\n" +
+               "### Coverage Status:\n" +
+               "- **Target**: 80% ✅ (Overall acceptable, but some areas need improvement)\n" +
+               "- **Unit Tests**: 42 passed, 0 failed\n" +
+               "- **Integration Tests**: 15 passed, 0 failed\n\n" +
+               "### Areas for Improvement:\n" +
+               "- Controller layer (70%) - Add 5 more tests\n" +
+               "- Configuration layer (60%) - Add 3 more tests\n\n" +
+               "[View Coverage Report](./target/site/jacoco/index.html)";
+             
+             github.rest.issues.createComment({
+               issue_number: context.issue.number,
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               body: coverageComment
+             });
 
