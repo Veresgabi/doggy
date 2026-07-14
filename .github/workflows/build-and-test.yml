@@ -1,5 +1,9 @@
 name: Build & Test
 
+# Force GitHub Actions JavaScript-based actions to run on Node24 (opt-in ahead of runner default change)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 on:
   push:
     branches:

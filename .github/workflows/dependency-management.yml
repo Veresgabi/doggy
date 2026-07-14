@@ -1,5 +1,9 @@
 name: Dependency Management & Auto PRs
 
+# Force GitHub Actions JavaScript-based actions to run on Node24 (opt-in ahead of runner default change)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 on:
   schedule:
     # Run daily at 2 AM UTC

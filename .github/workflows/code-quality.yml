@@ -1,5 +1,9 @@
 name: Code Quality Analysis
 
+# Force GitHub Actions JavaScript-based actions to run on Node24 (opt-in ahead of runner default change)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
 on:
   pull_request:
     paths:
@@ -7,7 +11,7 @@ on:
       - 'src/test/java/**'
   push:
     branches:
-      - main
+      - master
       - develop
 
 jobs:
@@ -49,7 +53,7 @@ jobs:
         with:
            script: |
              const fs = require('fs');
-             
+
              // Read quality analysis results
              const qualityComment = "## 📊 Code Quality Analysis Results\n\n" +
                "✅ **CheckStyle**: Passed\n" +
@@ -64,7 +68,7 @@ jobs:
                "- Testing Standards ✓\n" +
                "- Architecture Standards ✓\n\n" +
                "[View Full Report](${process.env.SERVER_URL}/artifacts)";
-             
+
              github.rest.issues.createComment({
                issue_number: context.issue.number,
                owner: context.repo.owner,
