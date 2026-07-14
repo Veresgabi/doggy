@@ -1,0 +1,254 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Doggy Project MCP Integration Configuration",
+  "description": "IDE and CLI configuration for Model Context Protocol servers used in the doggy project",
+  "vscode": {
+    "description": "Add to .vscode/settings.json for VS Code with Claude extension",
+    "example": {
+      "claude.mcpServers": {
+        "doggy-github": {
+          "name": "GitHub Server",
+          "command": "node",
+          "args": [".github/mcp-servers/github-server.js"],
+          "env": {
+            "GITHUB_TOKEN": "${env:GITHUB_TOKEN}",
+            "GITHUB_OWNER": "Gabor_Veres",
+            "GITHUB_REPO": "doggy"
+          }
+        },
+        "doggy-code-analysis": {
+          "name": "Code Analysis Server",
+          "command": "node",
+          "args": [".github/mcp-servers/code-analysis-server.js"],
+          "env": {
+            "PROJECT_ROOT": "${workspaceFolder}"
+          }
+        },
+        "doggy-maven-build": {
+          "name": "Maven Build Server",
+          "command": "node",
+          "args": [".github/mcp-servers/maven-build-server.js"],
+          "env": {
+            "PROJECT_ROOT": "${workspaceFolder}",
+            "MAVEN_HOME": "${env:MAVEN_HOME}",
+            "JAVA_HOME": "${env:JAVA_HOME}"
+          }
+        }
+      }
+    }
+  },
+  "jetbrains": {
+    "description": "Instructions for JetBrains IDE integration (IntelliJ, WebStorm, etc.)",
+    "copilot-instructions": {
+      "location": "C:\\Users\\<USERNAME>\\AppData\\Local\\github-copilot\\intellij\\copilot-instructions.md",
+      "install-script": ".github/scripts/install-copilot-instructions.ps1",
+      "instructions": [
+        ".github/instructions/copilot-instructions.md",
+        ".github/instructions/code-quality-standards.md",
+        ".github/instructions/testing-standards.md",
+        ".github/instructions/architecture-standards.md"
+      ]
+    },
+    "external-tools": {
+      "maven-test": {
+        "program": "cmd",
+        "arguments": "/c mvn clean test",
+        "working-directory": "$ProjectFileDir$"
+      },
+      "maven-build": {
+        "program": "cmd",
+        "arguments": "/c mvn clean package -DskipTests",
+        "working-directory": "$ProjectFileDir$"
+      },
+      "maven-coverage": {
+        "program": "cmd",
+        "arguments": "/c mvn clean test jacoco:report",
+        "working-directory": "$ProjectFileDir$"
+      },
+      "checkstyle": {
+        "program": "cmd",
+        "arguments": "/c mvn checkstyle:check",
+        "working-directory": "$ProjectFileDir$"
+      }
+    }
+  },
+  "cli": {
+    "description": "Command-line environment setup for manual MCP server usage",
+    "environment-variables": {
+      "windows-powershell": [
+        "$env:GITHUB_TOKEN = 'your-github-token'",
+        "$env:GITHUB_OWNER = 'Gabor_Veres'",
+        "$env:GITHUB_REPO = 'doggy'",
+        "$env:PROJECT_ROOT = 'C:\\path\\to\\doggy'",
+        "$env:MAVEN_HOME = 'C:\\path\\to\\maven'",
+        "$env:JAVA_HOME = 'C:\\path\\to\\java'"
+      ],
+      "unix-bash": [
+        "export GITHUB_TOKEN='your-github-token'",
+        "export GITHUB_OWNER='Gabor_Veres'",
+        "export GITHUB_REPO='doggy'",
+        "export PROJECT_ROOT='/path/to/doggy'",
+        "export MAVEN_HOME='/path/to/maven'",
+        "export JAVA_HOME='/path/to/java'"
+      ]
+    },
+    "startup-commands": {
+      "all-servers": "node .github/mcp-servers/github-server.js & node .github/mcp-servers/code-analysis-server.js & node .github/mcp-servers/maven-build-server.js",
+      "github-only": "node .github/mcp-servers/github-server.js",
+      "code-analysis-only": "node .github/mcp-servers/code-analysis-server.js",
+      "maven-only": "node .github/mcp-servers/maven-build-server.js"
+    }
+  },
+  "docker": {
+    "description": "Docker setup for containerized MCP servers",
+    "dockerfile": "FROM node:18-alpine\nWORKDIR /app\nCOPY .github/mcp-servers /app/mcp-servers\nCMD [\"node\", \"/app/mcp-servers/github-server.js\"]",
+    "docker-compose": {
+      "version": "3.8",
+      "services": {
+        "mcp-github": {
+          "build": ".",
+          "environment": [
+            "GITHUB_TOKEN=${GITHUB_TOKEN}",
+            "GITHUB_OWNER=Gabor_Veres",
+            "GITHUB_REPO=doggy"
+          ],
+          "ports": ["3001:3001"]
+        },
+        "mcp-analysis": {
+          "build": ".",
+          "environment": [
+            "PROJECT_ROOT=/workspace"
+          ],
+          "ports": ["3002:3002"],
+          "volumes": [".:/workspace"]
+        },
+        "mcp-maven": {
+          "build": ".",
+          "environment": [
+            "PROJECT_ROOT=/workspace",
+            "MAVEN_HOME=/opt/maven",
+            "JAVA_HOME=/opt/java"
+          ],
+          "ports": ["3003:3003"],
+          "volumes": [".:/workspace"]
+        }
+      }
+    }
+  },
+  "linters-and-formatters": {
+    "checkstyle": {
+      "configuration": "target/checkstyle-rules/checkstyle_rules.xml",
+      "maven-command": "mvn checkstyle:check",
+      "ide-setup": "Install CheckStyle-IDEA plugin in JetBrains"
+    },
+    "spotbugs": {
+      "maven-command": "mvn clean compile spotbugs:check",
+      "report": "target/spotbugsXml.xml"
+    },
+    "pmd": {
+      "maven-command": "mvn pmd:check",
+      "report": "target/pmd.xml"
+    },
+    "sonarlint": {
+      "description": "Real-time analysis in IDE",
+      "ide-plugin": "SonarLint - Install from IDE marketplace"
+    }
+  },
+  "quality-gates": {
+    "code-coverage": {
+      "target": "80%",
+      "command": "mvn clean test jacoco:report",
+      "report": "target/site/jacoco/index.html"
+    },
+    "mutation-testing": {
+      "command": "mvn test-compile org.pitest:pitest-maven:mutationCoverage",
+      "report": "target/pit-reports/"
+    },
+    "performance-testing": {
+      "tool": "JMH - Java Microbenchmark Harness",
+      "command": "mvn clean package",
+      "module": "Reference to performance-tests"
+    }
+  },
+  "git-hooks": {
+    "pre-commit": {
+      "description": "Run before each commit",
+      "script": "mvn clean compile checkstyle:check",
+      "setup": "Install Husky or Git Hooks"
+    },
+    "pre-push": {
+      "description": "Run before each push",
+      "script": "mvn clean test",
+      "setup": "Configure in .git/hooks/pre-push"
+    }
+  },
+  "testing-tools": {
+    "junit5": {
+      "version": "5.x",
+      "maven-dependency": "org.junit.jupiter:junit-jupiter"
+    },
+    "mockito": {
+      "version": "4.x",
+      "maven-dependency": "org.mockito:mockito-core"
+    },
+    "assertj": {
+      "version": "3.x",
+      "maven-dependency": "org.assertj:assertj-core"
+    },
+    "testcontainers": {
+      "description": "For database integration tests",
+      "maven-dependency": "org.testcontainers:testcontainers"
+    },
+    "wiremock": {
+      "description": "For mocking HTTP services",
+      "maven-dependency": "com.github.tomakehurst:wiremock-jre8"
+    }
+  },
+  "build-tools": {
+    "maven": {
+      "version": "3.8.1+",
+      "profiles": [
+        "local - Development profile with all checks",
+        "ci - CI/CD profile",
+        "prod - Production profile with optimizations"
+      ],
+      "common-commands": [
+        "mvn clean install",
+        "mvn clean test",
+        "mvn clean package",
+        "mvn verify",
+        "mvn clean verify -DskipTests",
+        "mvn checkstyle:check",
+        "mvn dependency:tree",
+        "mvn clean test jacoco:report"
+      ]
+    },
+    "java": {
+      "version": "17",
+      "properties": {
+        "maven.compiler.source": "17",
+        "maven.compiler.target": "17",
+        "project.build.sourceEncoding": "UTF-8"
+      }
+    }
+  },
+  "additional-resources": {
+    "documentation": [
+      ".github/README.md - Full documentation",
+      ".github/QUICK-START.md - Quick start guide",
+      ".github/instructions/code-quality-standards.md - Code quality guide",
+      ".github/instructions/testing-standards.md - Testing guide",
+      ".github/instructions/architecture-standards.md - Architecture guide"
+    ],
+    "useful-commands": [
+      "mvn clean test - Run all tests",
+      "mvn clean verify - Run all checks and tests",
+      "mvn clean test jacoco:report - Generate coverage report",
+      "mvn checkstyle:check - Run CheckStyle",
+      "mvn dependency:tree - Show dependency tree",
+      "mvn dependency-check:check - Check for vulnerabilities",
+      "start target/site/jacoco/index.html - Open coverage report"
+    ]
+  }
+}
+
