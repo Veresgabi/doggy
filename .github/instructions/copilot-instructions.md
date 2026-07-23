@@ -7,14 +7,14 @@ Scope:
 Naming convention override (Hungarian-style for this project scope):
 - Prefer Hungarian-style local variable prefixes inside repository implementation classes to make intent explicit in short scope.
 - Conventions used in this repo for repository impls (examples):
-  - String -> strName, strLifeSpan, strQuery
-  - Integer/Long -> iPage, iMaxResults, lCount
-  - List<T> -> lstDogs, lstPredicates
-  - Predicate -> predFilter, predForName
-  - Path -> pathBreedGroup
-  - CriteriaBuilder -> cb or criteriaBuilder
-  - EntityManager -> em
-  - Root<T> -> rootDog
+    - String -> strName, strLifeSpan, strQuery
+    - Integer/Long -> iPage, iMaxResults, lCount
+    - List<T> -> lstDogs, lstPredicates
+    - Predicate -> predFilter, predForName
+    - Path -> pathBreedGroup
+    - CriteriaBuilder -> cb or criteriaBuilder
+    - EntityManager -> em
+    - Root<T> -> rootDog
 
 Examples (before -> preferred suggestion):
 - name -> strName
@@ -40,15 +40,15 @@ To apply these instructions in JetBrains IDEs you have two convenient options on
 Option A — Manual copy
 
 1. **Locate your local GitHub Copilot config directory:**
-   - Windows: `C:\Users\<YourUsername>\AppData\Local\github-copilot\intellij\`
-   - macOS: `~/.config/github-copilot/intellij/`
-   - Linux: `~/.config/github-copilot/intellij/`
+    - Windows: `C:\Users\<YourUsername>\AppData\Local\github-copilot\intellij\`
+    - macOS: `~/.config/github-copilot/intellij/`
+    - Linux: `~/.config/github-copilot/intellij/`
 
 2. **Copy the instructions:**
-   - Create or update the file `copilot-instructions.md` in that directory and paste the contents of this file.
+    - Create or update the file `copilot-instructions.md` in that directory and paste the contents of this file.
 
 3. **Restart your IDE:**
-   - Restart JetBrains IDE or reload the GitHub Copilot plugin to pick up the changes.
+    - Restart JetBrains IDE or reload the GitHub Copilot plugin to pick up the changes.
 
 Option B — Run the provided installer script (recommended on Windows)
 
@@ -61,7 +61,7 @@ From the repository root run (PowerShell):
 This script will copy `.github/instructions/copilot-instructions.md` into your local Copilot config directory (under `%LOCALAPPDATA%\github-copilot\intellij`) and print the destination path. After running it, restart your JetBrains IDE or reload the plugin.
 
 4. **Verify it's active:**
-   - You should see suggestions that follow the Hungarian-style naming conventions (e.g., `strName`, `lstDogs`, `predFilter`).
+    - You should see suggestions that follow the Hungarian-style naming conventions (e.g., `strName`, `lstDogs`, `predFilter`).
 
 ### If you prefer a different prefix style
 Edit the conventions in both this file and your local GitHub Copilot config (for example, short one-letter prefixes: sName, iPage, or camelCase alternatives).
