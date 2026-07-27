@@ -34,15 +34,20 @@ Check for:
 
 ## Instructions
 
-Do not modify files immediately.
+Run the built-in code-review skill with the --comment flag to automatically post findings to the PR:
 
-First provide:
-1. Findings
-2. Severity:
-    - Critical
-    - Warning
-    - Suggestion
+```
+/code-review --comment
+```
 
-3. Recommended fixes
+This will:
+1. Analyze the current diff for bugs and code quality issues
+2. Automatically post inline comments on the PR at the specific lines
+3. Provide findings here in the conversation as well
 
-Only modify code if explicitly requested.
+Alternatively, if you want to review without posting to PR, use:
+```
+/code-review
+```
+
+Do not modify files immediately. Only fix issues if explicitly requested.
