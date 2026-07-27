@@ -21,8 +21,11 @@ Analyze:
 - Transaction handling
 - Configuration management
 
-### Testing
-- Missing tests
+### Testing (CRITICAL - CLAUDE.md line 13 requires JUnit 5 tests for new code)
+- **Missing tests for new methods/classes**: Every new public method must have corresponding JUnit 5 tests
+- **Missing tests for modified methods**: Check if existing tests cover the changes
+- Use Grep to find test files (e.g., search for "Test.java" files matching the changed class name)
+- Flag any new method that lacks test coverage as a CLAUDE.md convention violation
 - Incorrect mocking
 - Missing edge cases
 
@@ -44,6 +47,13 @@ This will:
 1. Analyze the current diff for bugs and code quality issues
 2. Automatically post inline comments on the PR at the specific lines
 3. Provide findings here in the conversation as well
+
+**IMPORTANT - Test Coverage Check:**
+After running code-review, ALWAYS verify test coverage for new/modified code:
+1. Use Grep to find test files for changed classes (e.g., if DogRepositoryCustomImpl changed, search for DogRepositoryCustomImplTest)
+2. Read the test file and check if new methods have corresponding tests
+3. If tests are missing, post a comment citing CLAUDE.md line 13: "Write JUnit 5 tests for new code"
+4. This is a CONVENTION violation and must be flagged
 
 Alternatively, if you want to review without posting to PR, use:
 ```
