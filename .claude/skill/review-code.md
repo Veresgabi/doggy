@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Review current code changes before creating a Pull Request.
+Review current code changes before creating a Pull Request. Only the changes contained by the PR should be checked.
 
 ## Review checklist
 

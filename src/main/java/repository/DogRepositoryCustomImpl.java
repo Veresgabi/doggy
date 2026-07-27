@@ -4,6 +4,8 @@ import dto.FilterDogDTO;
 import lombok.AllArgsConstructor;
 import model.Dog;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import util.DogUtil;
 
 import javax.persistence.EntityManager;
@@ -43,7 +45,7 @@ public class DogRepositoryCustomImpl implements DogRepositoryCustom {
         dogUtil.getImageForDogs(dogsList);
         dogRepository.saveAll(dogsList);
 
-        return null;
+        return dogsList;
     }
 
     @Override
@@ -58,6 +60,10 @@ public class DogRepositoryCustomImpl implements DogRepositoryCustom {
                 .where(predFilter);
 
         return entityManager.createQuery(qry).getSingleResult();
+    }
+
+    public List<Dog> findAllDogs() {
+        return dogRepository.findAll(PageRequest.of(0, Integer.MAX_VALUE));
     }
 
     private Predicate getFilterPredicate(FilterDogDTO request, Root<Dog> rootDog, CriteriaBuilder cb ) {
