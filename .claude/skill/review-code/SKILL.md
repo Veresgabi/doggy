@@ -1,3 +1,11 @@
+---
+name: Review Code
+description: >
+  Audits the active code diff for quality, style guidelines, console logs, and test coverage.
+  Use when the user says "review my changes", "audit code", or "check my diff".
+disable-model-invocation: false
+---
+
 # Review Code
 
 ## Purpose
