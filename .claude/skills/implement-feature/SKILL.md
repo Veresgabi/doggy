@@ -1,7 +1,8 @@
+---
 name: Implement Feature
 description: >
-Drafts, reviews, writes, and tests a brand new codebase feature.
-Use when the user says "add a new feature", "implement a ticket", or "build".
+  Drafts, reviews, writes, and tests a brand new codebase feature.
+  Use when the user says "add a new feature", "implement a ticket", or "build".
 disable-model-invocation: false
 ---
 
