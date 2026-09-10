@@ -4,7 +4,7 @@
 **Author:** Gabor Veres — Software Engineer
 **Project:** Learning project
 **Model:** Claude via Codemie, Sonnet 4.5
-**DIAL location:** [DIAL shared link or folder path]
+**DIAL location:** files/uploads/2026-09/prompt-template-summarize-pull-request.md
 **Committed location:** https://github.com/Veresgabi/doggy/tree/ai_pull-request-test
 
 ---
