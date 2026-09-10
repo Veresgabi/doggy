@@ -1,3 +1,11 @@
+---
+name: Create Pull Request
+description: >
+  Prepares a local branch, pushes changes to remote, and creates a GitHub pull request.
+  Use when the user wants to "open a PR", "create pull request", or "submit changes".
+disable-model-invocation: false
+---
+
 # Create Pull Request
 
 ## Purpose

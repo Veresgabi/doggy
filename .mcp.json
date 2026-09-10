@@ -9,6 +9,22 @@
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
+    },
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp"
+      ],
+      "env": {
+        "TIPP_MIX_PRO_USER": "${TIPP_MIX_PRO_USER}",
+        "TIPP_MIX_PRO_PASSWORD": "${TIPP_MIX_PRO_PASSWORD}"
+      }
+    },
+    "deepwiki": {
+      "type": "http",
+      "url": "https://mcp.deepwiki.com/mcp"
     }
   }
 }
